@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과외 관리</title>
+    <title>과외 기록</title>
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuq4sOyWhCDtlZnsg50g6rSA66asIiwKICAic2hvcnRfbmFtZSI6ICLqs7XsmbjqtIA66asiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiM0Qjc5QTEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSXhPVElpSUdobGFXZG9kRDBpTVRreUlpQjJhV1YzUW05NFBTSXdJREFnTVRreUlERTVNaUkrUEhKbFkzUWdlRDBpTWpRaUlIazlJakkwSWlCM2FXUjBhRDBpTVRRMElpQm9aV2xuYUhROUlURTBOQ0lnWm1sc2JEMGlJelJDTnpsQk1TSXZQanh3WVhSb0lHUTlJazB5TkNBMk5FZ3hOamdXMEZWRUdGbE9UREVPVEF6TkVoeU9UUXpTRE0wT1ZaUk0wZGhWalZVT1dwSGVrOTJhWGgzV21aa2MzVklNVm9pSUdacGJHdzlJaU0zTmpoQ05rRWlMejQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="과외관리">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE4MCIgaGVpZHRoPSIxODAiIGZpbGw9IiM0Qjc5QTEiLz48cGF0aCBkPSJNMjQgNjRIMTU2VjEyOEgyNFY2NFoiIGZpbGw9IiM3NjhCNkEiLz48L3N2Zz4=">
+    <meta name="apple-mobile-web-app-title" content="과외기록">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiM0Qjc5QTEiLz48cGF0aCBkPSJNMjQgNjRIMTU2VjEyOEgyNFY2NFoiIGZpbGw9IiM3NjhCNkEiLz48L3N2Zz4=">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; user-select: none; -webkit-user-select: none; overflow-x: hidden; }
@@ -32,27 +32,36 @@
         .calendar-day-header { background: #f5f5f7; padding: 12px 4px; text-align: center; font-weight: 600; font-size: 14px; color: #86868b; }
         .calendar-day { background: white; padding: 4px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; font-size: 14px; }
         .calendar-day:hover { background: #f0f8ff; }
-        .calendar-day.selected { background: #4B79A1; color: white; font-weight: 700; }
+        .calendar-day.selected { background: #e3eef7; outline: 2px solid #4B79A1; border-radius: 4px; }
+        .calendar-day.selected .day-number { font-weight: 700; }
         .calendar-day.today .day-number { background: #ff3b30; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
-        .calendar-day.has-class .day-number::after { content: ''; display: block; width: 5px; height: 5px; background-color: #ff9500; border-radius: 50%; margin: 2px auto 0; }
+        .class-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; margin-top: 4px; max-width: 35px; }
+        .class-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .filter-container { margin-bottom: 20px; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .filter-container select { width: 100%; padding: 10px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 16px; background-color: white; }
         .scheduled-classes-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .scheduled-classes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .scheduled-classes-header h3 { font-size: 20px; color: #1d1d1f; }
         .btn-primary { background: #4B79A1; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .btn-primary:hover { background: #3a6289; }
-        .class-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .class-item { display: flex; flex-direction: column; padding: 12px; border-bottom: 1px solid #e5e5e7; border-left: 5px solid transparent; margin: 4px 0; border-radius: 4px; background-color: #fafafa; }
         .class-item:last-child { border-bottom: none; }
-        .class-info-group { display: flex; align-items: center; gap: 12px; }
+        .class-item-main { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .class-info-group { display: flex; flex-direction:column; align-items: flex-start; gap: 4px; }
         .class-time { font-weight: 600; color: #4B79A1; }
-        .class-student { color: #1d1d1f; }
+        .class-student-list { font-size: 15px; color: #1d1d1f; }
+        .class-item-details { padding: 12px 0 4px 0; width: 100%; border-top: 1px dashed #e0e0e0; margin-top: 12px; font-size: 14px; line-height: 1.5; }
+        .detail-section { color: #555; }
+        .detail-section strong { color: #1d1d1f; }
+        .detail-section + .detail-section { margin-top: 8px; }
         .no-class-msg { text-align: center; color: #86868b; padding: 20px 0; }
         .student-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .student-header h2 { font-size: 24px; color: #1d1d1f; }
         .student-list { display: grid; gap: 16px; }
-        .student-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; }
+        .student-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; border-left: 6px solid; }
         .student-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
         .student-info h3 { font-size: 18px; color: #1d1d1f; margin-bottom: 8px; }
-        .student-details { color: #86868b; font-size: 14px; line-height: 1.5; }
+        .student-details { color: #86868b; font-size: 14px; line-height: 1.6; }
         .student-actions { margin-top: 12px; display: flex; gap: 8px; }
         .btn-small { padding: 6px 12px; font-size: 12px; border: 1px solid #d2d2d7; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .btn-small:hover { background: #f5f5f7; }
@@ -65,28 +74,46 @@
         .modal-title { font-size: 20px; font-weight: 700; }
         .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #86868b; }
         .form-group { margin-bottom: 16px; }
+        .form-group.hidden { display: none; }
         .form-label { display: block; font-weight: 600; margin-bottom: 6px; color: #1d1d1f; }
         .form-input { width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; }
         .form-input:focus { outline: none; border-color: #4B79A1; }
+        textarea.form-input { min-height: 80px; line-height: 1.5; }
         .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
         .btn-cancel { padding: 12px 20px; background: white; border: 1px solid #d2d2d7; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .btn-submit { padding: 12px 20px; background: #4B79A1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .billing-status { margin-top: 12px; }
+        .monthly-class-count { font-size: 15px; font-weight: 500; text-align: right; }
+        .progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 8px; height: 20px; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background-color: #4B79A1; border-radius: 8px 0 0 8px; transition: width 0.4s ease; }
+        .progress-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #1d1d1f; font-weight: 600; font-size: 12px; }
+        .billing-warning { margin-top: 10px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; }
+        .warning-text { color: #856404; font-size: 14px; font-weight: bold; margin-bottom: 8px; }
+        .payment-checkbox-label { display: flex; align-items: center; cursor: pointer; font-size: 14px; }
+        .payment-checkbox { margin-right: 8px; transform: scale(1.2); }
+        .student-checkbox-container { max-height: 150px; overflow-y: auto; border: 1px solid #d2d2d7; border-radius: 8px; padding: 8px; }
+        .student-checkbox-item { display: flex; align-items: center; padding: 8px; }
+        .student-checkbox-item:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
+        .student-checkbox-item input { margin-right: 12px; transform: scale(1.2); }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
-            <h1>과외 관리</h1>
-            <p>학생들과 수업 일정을 효율적으로 관리하세요</p>
+            <h1>과외 기록</h1>
+            <p>진행한 수업을 기록하고 관리하세요</p>
         </div>
 
         <div class="tab-navigation">
-            <button class="tab-button active" data-tab="calendar">캘린더</button>
-            <button class="tab-button" data-tab="students">학생 관리</button>
+            <button class="tab-button active" data-tab="calendar" id="calendarTabButton">캘린더</button>
+            <button class="tab-button" data-tab="students" id="studentsTabButton">학생 관리</button>
         </div>
 
         <div class="content">
             <div id="calendar" class="tab-content active">
+                <div class="filter-container">
+                    <select id="studentFilter"></select>
+                </div>
                 <div class="calendar-container">
                     <div class="calendar-header">
                         <button class="calendar-nav" id="prevMonth">‹</button>
@@ -98,8 +125,8 @@
 
                 <div class="scheduled-classes-container">
                     <div class="scheduled-classes-header">
-                        <h3 id="scheduledClassesTitle">오늘의 수업</h3>
-                        <button class="btn-primary" id="addClassBtn">+ 수업 추가</button>
+                        <h3 id="scheduledClassesTitle">오늘의 수업 기록</h3>
+                        <button class="btn-primary" id="addClassBtn">+ 수업 기록</button>
                     </div>
                     <div id="scheduledClassesList"></div>
                 </div>
@@ -130,6 +157,21 @@
                     <label class="form-label">과목</label>
                     <input type="text" class="form-input" id="studentSubject" required>
                 </div>
+                 <div class="form-group">
+                    <label class="form-label">정산 방식</label>
+                    <select id="paymentMethod" class="form-input" required>
+                        <option value="session">횟수별 정산</option>
+                        <option value="monthly">월별 정산</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="sessionCycleGroup">
+                    <label class="form-label">기준 횟수 (예: 4, 8)</label>
+                    <input type="number" class="form-input" id="sessionCycle" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">수업료</label>
+                    <input type="number" class="form-input" id="studentFee">
+                </div>
                 <div class="form-group">
                     <label class="form-label">학년</label>
                     <input type="text" class="form-input" id="studentGrade">
@@ -137,10 +179,6 @@
                 <div class="form-group">
                     <label class="form-label">연락처</label>
                     <input type="tel" class="form-input" id="studentPhone">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">수업료</label>
-                    <input type="number" class="form-input" id="studentFee">
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" data-modal="studentModal">취소</button>
@@ -153,18 +191,26 @@
     <div class="modal" id="classModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="classModalTitle">수업 추가</h3>
+                <h3 class="modal-title" id="classModalTitle">수업 기록 추가</h3>
                 <button class="close-btn" data-modal="classModal">&times;</button>
             </div>
             <form id="classForm">
                 <input type="hidden" id="classDate">
                 <div class="form-group">
-                    <label class="form-label">학생</label>
-                    <select id="classStudent" class="form-input" required></select>
+                    <label class="form-label">학생 (복수 선택 가능)</label>
+                    <div id="classStudentCheckboxes" class="student-checkbox-container"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">수업 시간</label>
                     <input type="time" class="form-input" id="classTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">수업 메모</label>
+                    <textarea id="classMemo" class="form-input" placeholder="수업 내용, 학생의 상태 등 자유롭게 기록하세요."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">숙제</label>
+                    <textarea id="classHomework" class="form-input" placeholder="내준 숙제를 기록하세요."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" data-modal="classModal">취소</button>
@@ -176,67 +222,69 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 앱 데이터
             let students = [];
             let classes = [];
             let currentDate = new Date();
             let selectedDate = null;
             let currentEditingStudentId = null;
 
-            // DOM 요소
+            const G_COLOR_PALETTE = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
+
             const getEl = (id) => document.getElementById(id);
-            const queryEl = (selector) => document.querySelector(selector);
             const queryAll = (selector) => document.querySelectorAll(selector);
 
             const tabButtons = queryAll('.tab-button');
             const tabContents = queryAll('.tab-content');
             const calendarGrid = getEl('calendarGrid');
             const currentMonthElement = getEl('currentMonth');
+            const studentFilter = getEl('studentFilter');
             const scheduledClassesTitle = getEl('scheduledClassesTitle');
             const scheduledClassesList = getEl('scheduledClassesList');
             const studentList = getEl('studentList');
-
-            // 모달 관련
             const studentModal = getEl('studentModal');
             const classModal = getEl('classModal');
             const studentForm = getEl('studentForm');
             const classForm = getEl('classForm');
+            const paymentMethodSelect = getEl('paymentMethod');
+            const sessionCycleGroup = getEl('sessionCycleGroup');
 
-            // --- 데이터 관리 (LocalStorage) ---
             const saveData = () => {
-                localStorage.setItem('tutoring_students', JSON.stringify(students));
-                localStorage.setItem('tutoring_classes', JSON.stringify(classes));
+                localStorage.setItem('tutoring_log_students_v4', JSON.stringify(students));
+                localStorage.setItem('tutoring_log_classes_v4', JSON.stringify(classes));
             };
 
             const loadData = () => {
-                students = JSON.parse(localStorage.getItem('tutoring_students')) || [];
-                classes = JSON.parse(localStorage.getItem('tutoring_classes')) || [];
+                students = JSON.parse(localStorage.getItem('tutoring_log_students_v4')) || [];
+                classes = JSON.parse(localStorage.getItem('tutoring_log_classes_v4')) || [];
             };
-            
-            // --- 뷰 렌더링 함수 ---
-            
-            // 캘린더 렌더링
+
+            const renderStudentFilter = () => {
+                const currentFilterValue = studentFilter.value;
+                studentFilter.innerHTML = `<option value="all">모든 학생</option>`;
+                students.forEach(s => {
+                    studentFilter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+                });
+                studentFilter.value = currentFilterValue || 'all';
+            };
+
             const updateCalendar = () => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
+                const selectedFilterId = studentFilter.value;
                 
                 currentMonthElement.textContent = `${year}년 ${month + 1}월`;
-                
-                const firstDay = new Date(year, month, 1);
-                const lastDay = new Date(year, month + 1, 0);
                 
                 const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
                 calendarGrid.innerHTML = dayHeaders.map(day => `<div class="calendar-day-header">${day}</div>`).join('');
 
-                let dayCounter = new Date(firstDay);
-                dayCounter.setDate(dayCounter.getDate() - firstDay.getDay());
+                let dayCounter = new Date(year, month, 1);
+                dayCounter.setDate(dayCounter.getDate() - dayCounter.getDay());
                 
                 const today = new Date();
                 
                 for (let i = 0; i < 42; i++) {
                     const dayDiv = document.createElement('div');
                     dayDiv.classList.add('calendar-day');
-
                     const dateStr = `${dayCounter.getFullYear()}-${String(dayCounter.getMonth() + 1).padStart(2, '0')}-${String(dayCounter.getDate()).padStart(2, '0')}`;
                     dayDiv.dataset.date = dateStr;
 
@@ -245,56 +293,76 @@
                     dayNumber.textContent = dayCounter.getDate();
                     dayDiv.appendChild(dayNumber);
 
-                    if (dayCounter.getMonth() !== month) {
-                        dayDiv.style.opacity = "0.4";
-                    }
-
-                    if (dayCounter.toDateString() === today.toDateString()) {
-                        dayDiv.classList.add('today');
-                    }
-
-                    if (selectedDate && dayCounter.toDateString() === selectedDate.toDateString()) {
-                        dayDiv.classList.add('selected');
-                    }
+                    if (dayCounter.getMonth() !== month) dayDiv.style.opacity = "0.4";
+                    if (dayCounter.toDateString() === today.toDateString()) dayDiv.classList.add('today');
+                    if (selectedDate && dayCounter.toDateString() === selectedDate.toDateString()) dayDiv.classList.add('selected');
                     
-                    const classesOnThisDay = classes.filter(c => c.date === dateStr);
-                    if (classesOnThisDay.length > 0) {
-                        dayDiv.classList.add('has-class');
+                    let sessionsOnThisDay = classes.filter(c => c.date === dateStr);
+                    if (selectedFilterId !== 'all') {
+                        sessionsOnThisDay = sessionsOnThisDay.filter(c => c.studentIds.includes(Number(selectedFilterId)));
                     }
 
+                    if (sessionsOnThisDay.length > 0) {
+                        const dotsContainer = document.createElement('div');
+                        dotsContainer.className = 'class-dots';
+                        const studentIdsOnThisDay = sessionsOnThisDay.flatMap(c => c.studentIds);
+                        const uniqueStudentIds = [...new Set(studentIdsOnThisDay)];
+                        
+                        uniqueStudentIds.slice(0, 5).forEach(studentId => {
+                            const student = students.find(s => s.id === studentId);
+                            if (student) {
+                                const dot = document.createElement('div');
+                                dot.className = 'class-dot';
+                                dot.style.backgroundColor = student.color;
+                                dotsContainer.appendChild(dot);
+                            }
+                        });
+                        dayDiv.appendChild(dotsContainer);
+                    }
                     calendarGrid.appendChild(dayDiv);
                     dayCounter.setDate(dayCounter.getDate() + 1);
                 }
             };
             
-            // 특정 날짜의 수업 목록 렌더링
             const renderClassesForDate = (date) => {
                 selectedDate = date;
                 const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                
+                const selectedFilterId = studentFilter.value;
                 const today = new Date();
-                if (date.toDateString() === today.toDateString()) {
-                    scheduledClassesTitle.textContent = '오늘의 수업';
-                } else {
-                    scheduledClassesTitle.textContent = `${date.getMonth() + 1}월 ${date.getDate()}일의 수업`;
+                if (date.toDateString() === today.toDateString()) scheduledClassesTitle.textContent = '오늘의 수업 기록';
+                else scheduledClassesTitle.textContent = `${date.getMonth() + 1}월 ${date.getDate()}일의 기록`;
+                
+                let sessionsOnThisDay = classes.filter(c => c.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+                if (selectedFilterId !== 'all') {
+                    sessionsOnThisDay = sessionsOnThisDay.filter(c => c.studentIds.includes(Number(selectedFilterId)));
                 }
 
-                const classesOnThisDay = classes
-                    .filter(c => c.date === dateStr)
-                    .sort((a, b) => a.time.localeCompare(b.time));
-
-                if (classesOnThisDay.length === 0) {
-                    scheduledClassesList.innerHTML = `<div class="no-class-msg">예정된 수업이 없습니다.</div>`;
+                if (sessionsOnThisDay.length === 0) {
+                    scheduledClassesList.innerHTML = `<div class="no-class-msg">수업 기록을 추가해 주세요.</div>`;
                 } else {
-                    scheduledClassesList.innerHTML = classesOnThisDay.map(c => {
-                        const student = students.find(s => s.id === c.studentId);
+                    scheduledClassesList.innerHTML = sessionsOnThisDay.map(c => {
+                        const participatingStudents = students.filter(s => c.studentIds.includes(s.id));
+                        if (participatingStudents.length === 0) return '';
+                        
+                        const studentNames = participatingStudents.map(s => s.name).join(', ');
+                        const memoHtml = c.memo ? c.memo.replace(/\n/g, '<br>') : '';
+                        const homeworkHtml = c.homework ? c.homework.replace(/\n/g, '<br>') : '';
+
                         return `
-                            <div class="class-item">
-                                <div class="class-info-group">
-                                    <div class="class-time">${c.time}</div>
-                                    <div class="class-student">${student ? `${student.name} (${student.subject})` : '알 수 없는 학생'}</div>
+                            <div class="class-item" style="border-left-color: ${participatingStudents[0].color};">
+                                <div class="class-item-main">
+                                    <div class="class-info-group">
+                                        <div class="class-time">${c.time}</div>
+                                        <div class="class-student-list">${studentNames}</div>
+                                    </div>
+                                    <button class="btn-small danger" data-class-id="${c.id}">삭제</button>
                                 </div>
-                                <button class="btn-small danger" data-class-id="${c.id}">삭제</button>
+                                ${ (c.memo || c.homework) ? `
+                                <div class="class-item-details">
+                                    ${c.memo ? `<div class="detail-section"><strong>메모:</strong> ${memoHtml}</div>` : ''}
+                                    ${c.homework ? `<div class="detail-section"><strong>숙제:</strong> ${homeworkHtml}</div>` : ''}
+                                </div>
+                                ` : '' }
                             </div>
                         `;
                     }).join('');
@@ -302,8 +370,31 @@
                 updateCalendar();
             };
 
-            // 학생 목록 렌더링
             const renderStudents = () => {
+                const today = new Date();
+                students.forEach(student => {
+                    if (student.paymentMethod === 'monthly') {
+                        const lastMonthDate = new Date(today.getFullYear(), today.getMonth(), 0); // Get last day of previous month
+                        const lastMonthYear = lastMonthDate.getFullYear();
+                        const lastMonthMonth = lastMonthDate.getMonth();
+                        
+                        const isAlreadyUnpaid = student.unpaidMonths.some(m => m.year === lastMonthYear && m.month === lastMonthMonth);
+
+                        if (!isAlreadyUnpaid) {
+                            const classesInLastMonth = classes.filter(c => {
+                                const classDate = new Date(c.date.replace(/-/g, '/'));
+                                return c.studentIds.includes(student.id) && classDate.getFullYear() === lastMonthYear && classDate.getMonth() === lastMonthMonth;
+                            }).length;
+
+                            if(classesInLastMonth > 0) {
+                                student.unpaidMonths.push({ year: lastMonthYear, month: lastMonthMonth, classCount: classesInLastMonth });
+                            }
+                        }
+                    }
+                });
+                saveData();
+
+
                 studentList.innerHTML = '';
                 if (students.length === 0) {
                     studentList.innerHTML = `<div class="no-class-msg">등록된 학생이 없습니다.</div>`;
@@ -312,15 +403,65 @@
                 students.forEach(student => {
                     const studentCard = document.createElement('div');
                     studentCard.className = 'student-card';
+                    studentCard.style.borderColor = student.color;
+
+                    let billingStatusHTML = '';
+                    let billingWarningHTML = '';
+
+                    if (student.paymentMethod === 'session') {
+                        const cycle = student.sessionCycle || 1;
+                        const count = student.totalClassesCount || 0;
+                        const overdueCycles = count >= cycle ? Math.floor(count / cycle) : 0;
+                        const currentInCycle = count % cycle;
+                        const progressPercent = cycle > 0 ? (currentInCycle / cycle * 100) : 0;
+
+                        billingStatusHTML = `
+                            <div class="billing-status">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: ${progressPercent}%;"></div>
+                                    <div class="progress-text">${currentInCycle} / ${cycle} (총 ${count}회)</div>
+                                </div>
+                            </div>
+                        `;
+                        if (overdueCycles > 0) {
+                            billingWarningHTML = `
+                                <div class="billing-warning">
+                                    <div class="warning-text">${overdueCycles}회분 수업료가 밀렸습니다.</div>
+                                    <label class="payment-checkbox-label">
+                                        <input type="checkbox" class="payment-checkbox" data-student-id="${student.id}"> 수업료 받음 (1회분 정산)
+                                    </label>
+                                </div>`;
+                        }
+                    } else { // monthly
+                        const classesThisMonth = classes.filter(c => {
+                            const classDate = new Date(c.date.replace(/-/g, '/'));
+                            return c.studentIds.includes(student.id) && classDate.getFullYear() === today.getFullYear() && classDate.getMonth() === today.getMonth();
+                        }).length;
+
+                        billingStatusHTML = `<div class="billing-status"><div class="monthly-class-count">이번 달 총 ${classesThisMonth}회 수업</div></div>`;
+
+                        if (student.unpaidMonths && student.unpaidMonths.length > 0) {
+                            const totalUnpaidClasses = student.unpaidMonths.reduce((sum, m) => sum + m.classCount, 0);
+                            billingWarningHTML = `
+                                <div class="billing-warning">
+                                    <div class="warning-text">${student.unpaidMonths.length}개월분 (${totalUnpaidClasses}회) 수업료가 밀렸습니다.</div>
+                                    <label class="payment-checkbox-label">
+                                        <input type="checkbox" class="payment-checkbox" data-student-id="${student.id}"> 수업료 받음 (가장 오래된 1개월분 정산)
+                                    </label>
+                                </div>`;
+                        }
+                    }
+
+                    const paymentText = student.paymentMethod === 'session' ? `횟수별 (${student.sessionCycle || '미설정'}회)` : '월별';
                     studentCard.innerHTML = `
                         <div class="student-info">
                             <h3>${student.name}</h3>
                             <div class="student-details">
                                 <div>과목: ${student.subject}</div>
-                                <div>학년: ${student.grade || '-'}</div>
-                                <div>연락처: ${student.phone || '-'}</div>
-                                <div>수업료: ${student.fee ? student.fee.toLocaleString() + '원' : '-'}</div>
+                                <div>정산: ${paymentText}</div>
                             </div>
+                            ${billingStatusHTML}
+                            ${billingWarningHTML}
                         </div>
                         <div class="student-actions">
                             <button class="btn-small edit-student" data-id="${student.id}">편집</button>
@@ -331,7 +472,6 @@
                 });
             };
 
-            // --- 모달 관리 ---
             const openModal = (modalElement) => modalElement.classList.add('show');
             const closeModal = (modalElement) => modalElement.classList.remove('show');
 
@@ -343,12 +483,15 @@
                     getEl('studentModalTitle').textContent = '학생 편집';
                     getEl('studentName').value = student.name;
                     getEl('studentSubject').value = student.subject;
+                    getEl('paymentMethod').value = student.paymentMethod;
+                    if(student.paymentMethod === 'session') getEl('sessionCycle').value = student.sessionCycle;
+                    getEl('studentFee').value = student.fee;
                     getEl('studentGrade').value = student.grade;
                     getEl('studentPhone').value = student.phone;
-                    getEl('studentFee').value = student.fee;
                 } else {
                     getEl('studentModalTitle').textContent = '학생 추가';
                 }
+                paymentMethodSelect.dispatchEvent(new Event('change'));
                 openModal(studentModal);
             };
 
@@ -359,122 +502,169 @@
                 }
                 if (students.length === 0) {
                     alert('먼저 학생을 등록해주세요.');
+                    getEl('studentsTabButton').click();
                     return;
                 }
                 classForm.reset();
                 getEl('classDate').value = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
                 
-                const studentSelect = getEl('classStudent');
-                studentSelect.innerHTML = students.map(s => `<option value="${s.id}">${s.name} (${s.subject})</option>`).join('');
+                const checkboxesContainer = getEl('classStudentCheckboxes');
+                checkboxesContainer.innerHTML = students.map(s => `
+                    <div class="student-checkbox-item">
+                        <input type="checkbox" value="${s.id}" id="student-cb-${s.id}">
+                        <label for="student-cb-${s.id}">${s.name} (${s.subject})</label>
+                    </div>
+                `).join('');
                 
                 openModal(classModal);
             };
             
-            // --- 이벤트 핸들러 ---
-            
-            // 탭 전환
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTab = button.dataset.tab;
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    button.classList.add('active');
-                    getEl(targetTab).classList.add('active');
-                });
-            });
+            const activateTab = (tabName) => {
+                tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
+                tabContents.forEach(content => content.classList.toggle('active', content.id === tabName));
+                if(tabName === 'students') renderStudents();
+            };
 
-            // 캘린더 월 이동
-            getEl('prevMonth').addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                updateCalendar();
-            });
-
-            getEl('nextMonth').addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                updateCalendar();
-            });
-            
-            // 캘린더 날짜 클릭
+            tabButtons.forEach(button => button.addEventListener('click', () => activateTab(button.dataset.tab)));
+            getEl('prevMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); updateCalendar(); });
+            getEl('nextMonth').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); updateCalendar(); });
             calendarGrid.addEventListener('click', (e) => {
                 const dayDiv = e.target.closest('.calendar-day');
-                if (dayDiv && dayDiv.dataset.date) {
-                    renderClassesForDate(new Date(dayDiv.dataset.date));
-                }
+                if (dayDiv && dayDiv.dataset.date) renderClassesForDate(new Date(dayDiv.dataset.date.replace(/-/g, '/')));
             });
-            
-            // 학생 추가 버튼
+            studentFilter.addEventListener('change', () => renderClassesForDate(selectedDate));
             getEl('addStudentBtn').addEventListener('click', () => openStudentModal());
 
-            // 학생 리스트에서 편집/삭제 버튼
             studentList.addEventListener('click', (e) => {
                 const target = e.target;
-                if (target.classList.contains('edit-student')) {
-                    openStudentModal(Number(target.dataset.id));
-                }
+                if (target.classList.contains('edit-student')) openStudentModal(Number(target.dataset.id));
                 if (target.classList.contains('delete-student')) {
                     const studentId = Number(target.dataset.id);
                     if (confirm('정말로 이 학생을 삭제하시겠습니까?\n해당 학생의 모든 수업 기록이 함께 삭제됩니다.')) {
                         students = students.filter(s => s.id !== studentId);
-                        classes = classes.filter(c => c.studentId !== studentId);
+                        classes = classes.map(c => {
+                            c.studentIds = c.studentIds.filter(id => id !== studentId);
+                            return c;
+                        }).filter(c => c.studentIds.length > 0);
                         saveData();
                         renderStudents();
+                        renderStudentFilter();
                         renderClassesForDate(selectedDate || new Date());
                     }
                 }
+                if (target.classList.contains('payment-checkbox')) {
+                    const studentId = Number(target.dataset.studentId);
+                    const student = students.find(s => s.id === studentId);
+                    if (student.paymentMethod === 'session') {
+                        if(student.totalClassesCount >= student.sessionCycle) {
+                           student.totalClassesCount -= student.sessionCycle;
+                        }
+                    } else {
+                        student.unpaidMonths.shift();
+                    }
+                    saveData();
+                    renderStudents();
+                    target.checked = false;
+                }
             });
             
-            // 수업 추가 버튼
             getEl('addClassBtn').addEventListener('click', openClassModal);
             
-            // 수업 삭제 버튼
             scheduledClassesList.addEventListener('click', (e) => {
                 if(e.target.matches('[data-class-id]')) {
                     const classId = Number(e.target.dataset.classId);
+                    const classToDelete = classes.find(c => c.id === classId);
+                    if (classToDelete) {
+                        classToDelete.studentIds.forEach(studentId => {
+                            const student = students.find(s => s.id === studentId);
+                            if (student && student.paymentMethod === 'session') {
+                                student.totalClassesCount = Math.max(0, (student.totalClassesCount || 0) - 1);
+                            }
+                        });
+                    }
                     classes = classes.filter(c => c.id !== classId);
                     saveData();
                     renderClassesForDate(selectedDate);
                 }
             });
 
-            // 학생 정보 폼 제출
+            paymentMethodSelect.addEventListener('change', () => {
+                sessionCycleGroup.classList.toggle('hidden', paymentMethodSelect.value !== 'session');
+            });
+            
             studentForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                const paymentMethod = getEl('paymentMethod').value;
+                const sessionCycle = getEl('sessionCycle').value;
+
+                if (paymentMethod === 'session' && (!sessionCycle || sessionCycle < 1)) {
+                    alert('횟수별 정산은 기준 횟수를 1 이상으로 입력해야 합니다.');
+                    return;
+                }
+
                 const formData = {
                     name: getEl('studentName').value,
                     subject: getEl('studentSubject').value,
                     grade: getEl('studentGrade').value,
                     phone: getEl('studentPhone').value,
+                    paymentMethod: paymentMethod,
+                    sessionCycle: paymentMethod === 'session' ? Number(sessionCycle) : null,
                     fee: parseInt(getEl('studentFee').value) || 0
                 };
 
                 if (currentEditingStudentId) {
                     const index = students.findIndex(s => s.id === currentEditingStudentId);
-                    students[index] = { ...students[index], ...formData };
+                    const oldStudent = students[index];
+                    students[index] = { ...oldStudent, ...formData };
                 } else {
                     const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
-                    students.push({ id: newId, ...formData });
+                    const newStudent = { 
+                        id: newId, 
+                        ...formData, 
+                        color: G_COLOR_PALETTE[(newId - 1) % G_COLOR_PALETTE.length],
+                        totalClassesCount: 0,
+                        unpaidMonths: []
+                    };
+                    students.push(newStudent);
                 }
                 saveData();
                 renderStudents();
+                renderStudentFilter();
                 closeModal(studentModal);
             });
 
-            // 수업 정보 폼 제출
             classForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                const selectedCheckboxes = queryAll('#classStudentCheckboxes input:checked');
+                const selectedStudentIds = Array.from(selectedCheckboxes).map(cb => Number(cb.value));
+                
+                if (selectedStudentIds.length === 0) {
+                    alert('한 명 이상의 학생을 선택해주세요.');
+                    return;
+                }
+
+                selectedStudentIds.forEach(studentId => {
+                    const student = students.find(s => s.id === studentId);
+                    if (student && student.paymentMethod === 'session') {
+                        student.totalClassesCount = (student.totalClassesCount || 0) + 1;
+                    }
+                });
+
                 const newClass = {
                     id: classes.length > 0 ? Math.max(...classes.map(c => c.id)) + 1 : 1,
                     date: getEl('classDate').value,
                     time: getEl('classTime').value,
-                    studentId: Number(getEl('classStudent').value)
+                    studentIds: selectedStudentIds,
+                    memo: getEl('classMemo').value.trim(),
+                    homework: getEl('classHomework').value.trim()
                 };
                 classes.push(newClass);
                 saveData();
                 renderClassesForDate(selectedDate);
+                renderStudents();
                 closeModal(classModal);
             });
 
-            // 모달 닫기 버튼 및 배경 클릭
             queryAll('.close-btn, .btn-cancel').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const modal = getEl(btn.dataset.modal);
@@ -483,19 +673,15 @@
             });
             
             queryAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        closeModal(modal);
-                    }
-                });
+                modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(modal); });
             });
 
-            // --- 앱 초기화 ---
             const initializeApp = () => {
                 loadData();
                 const today = new Date();
                 selectedDate = today;
-                renderStudents();
+                renderStudentFilter();
+                renderStudents(); // 월별 정산 로직이 포함되어 먼저 호출
                 updateCalendar();
                 renderClassesForDate(today);
             };

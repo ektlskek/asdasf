@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>과외 관리</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuq4sOyWhCDtlZnsg50g6rSA66asIiwKICAic2hvcnRfbmFtZSI6ICLqs7XsmbjqtIA66asiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInRoZW1lX2NvbG9yIjogIiM0Qjc5QTEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSXhPVElpSUdobGFXZG9kRDBpTVRreUlpQjJhV1YzUW05NFBTSXdJREFnTVRreUlERTVNaUkrUEhKbFkzUWdlRDBpTWpRaUlIazlJakkwSWlCM2FXUjBhRDBpTVRRMElpQm9aV2xuYUhROUlURTBOQ0lnWm1sc2JEMGlJelJDTnpsQk1TSXZQanh3WVhSb0lHUTlJazB5TkNBMk5FZ3hOamdXMEZWRUdGbE9UREVPVEF6TkVoeU9UUXpTRE0wT1ZaUk0wZGhWalZVT1dwSGVrOTJhWGgzV21aa2MzVklNVm9pSUdacGJHdzlJaU0zTmpoQ05rRWlMejQ4TDNOMlp6ND0iLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="과외관리">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjE4MCIgaGVpZHRoPSIxODAiIGZpbGw9IiM0Qjc5QTEiLz48cGF0aCBkPSJNMjQgNjRIMTU2VjEyOEgyNFY2NFoiIGZpbGw9IiM3NjhCNkEiLz48L3N2Zz4=">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; user-select: none; -webkit-user-select: none; overflow-x: hidden; }
+        .app-container { min-height: 100vh; display: flex; flex-direction: column; }
+        .header { background: linear-gradient(135deg, #4B79A1 0%, #283E51 100%); color: white; padding: 60px 20px 20px; text-align: center; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 16px; }
+        .tab-navigation { display: flex; background: white; border-bottom: 1px solid #e5e5e7; position: sticky; top: 0; z-index: 100; }
+        .tab-button { flex: 1; padding: 16px; background: none; border: none; font-size: 16px; font-weight: 600; color: #86868b; cursor: pointer; transition: all 0.3s ease; position: relative; }
+        .tab-button.active { color: #4B79A1; }
+        .tab-button.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #4B79A1; border-radius: 2px 2px 0 0; }
+        .content { flex: 1; padding: 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .calendar-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-nav { background: none; border: none; font-size: 24px; color: #4B79A1; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s; }
+        .calendar-nav:hover { background: #f0f0f0; }
+        .calendar-title { font-size: 20px; font-weight: 700; color: #1d1d1f; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e5e5e7; border-radius: 8px; overflow: hidden; }
+        .calendar-day-header { background: #f5f5f7; padding: 12px 4px; text-align: center; font-weight: 600; font-size: 14px; color: #86868b; }
+        .calendar-day { background: white; padding: 4px; text-align: center; cursor: pointer; transition: all 0.2s; min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; font-size: 14px; }
+        .calendar-day:hover { background: #f0f8ff; }
+        .calendar-day.selected { background: #4B79A1; color: white; font-weight: 700; }
+        .calendar-day.today .day-number { background: #ff3b30; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+        .calendar-day.has-class .day-number::after { content: ''; display: block; width: 5px; height: 5px; background-color: #ff9500; border-radius: 50%; margin: 2px auto 0; }
+        .scheduled-classes-container { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .scheduled-classes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .scheduled-classes-header h3 { font-size: 20px; color: #1d1d1f; }
+        .btn-primary { background: #4B79A1; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #3a6289; }
+        .class-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .class-item:last-child { border-bottom: none; }
+        .class-info-group { display: flex; align-items: center; gap: 12px; }
+        .class-time { font-weight: 600; color: #4B79A1; }
+        .class-student { color: #1d1d1f; }
+        .no-class-msg { text-align: center; color: #86868b; padding: 20px 0; }
+        .student-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .student-header h2 { font-size: 24px; color: #1d1d1f; }
+        .student-list { display: grid; gap: 16px; }
+        .student-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); transition: transform 0.2s, box-shadow 0.2s; }
+        .student-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+        .student-info h3 { font-size: 18px; color: #1d1d1f; margin-bottom: 8px; }
+        .student-details { color: #86868b; font-size: 14px; line-height: 1.5; }
+        .student-actions { margin-top: 12px; display: flex; gap: 8px; }
+        .btn-small { padding: 6px 12px; font-size: 12px; border: 1px solid #d2d2d7; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .btn-small:hover { background: #f5f5f7; }
+        .btn-small.danger { color: #ff3b30; border-color: #ff3b30; }
+        .btn-small.danger:hover { background: #fff5f5; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #86868b; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 6px; color: #1d1d1f; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; }
+        .form-input:focus { outline: none; border-color: #4B79A1; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .btn-cancel { padding: 12px 20px; background: white; border: 1px solid #d2d2d7; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-submit { padding: 12px 20px; background: #4B79A1; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>과외 관리</h1>
+            <p>학생들과 수업 일정을 효율적으로 관리하세요</p>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="calendar">캘린더</button>
+            <button class="tab-button" data-tab="students">학생 관리</button>
+        </div>
+
+        <div class="content">
+            <div id="calendar" class="tab-content active">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" id="prevMonth">‹</button>
+                        <div class="calendar-title" id="currentMonth"></div>
+                        <button class="calendar-nav" id="nextMonth">›</button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid"></div>
+                </div>
+
+                <div class="scheduled-classes-container">
+                    <div class="scheduled-classes-header">
+                        <h3 id="scheduledClassesTitle">오늘의 수업</h3>
+                        <button class="btn-primary" id="addClassBtn">+ 수업 추가</button>
+                    </div>
+                    <div id="scheduledClassesList"></div>
+                </div>
+            </div>
+
+            <div id="students" class="tab-content">
+                <div class="student-header">
+                    <h2>학생 관리</h2>
+                    <button class="btn-primary" id="addStudentBtn">+ 학생 추가</button>
+                </div>
+                <div class="student-list" id="studentList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="studentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="studentModalTitle">학생 추가</h3>
+                <button class="close-btn" data-modal="studentModal">&times;</button>
+            </div>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="text" class="form-input" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">과목</label>
+                    <input type="text" class="form-input" id="studentSubject" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">학년</label>
+                    <input type="text" class="form-input" id="studentGrade">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">연락처</label>
+                    <input type="tel" class="form-input" id="studentPhone">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">수업료</label>
+                    <input type="number" class="form-input" id="studentFee">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="studentModal">취소</button>
+                    <button type="submit" class="btn-submit">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="classModalTitle">수업 추가</h3>
+                <button class="close-btn" data-modal="classModal">&times;</button>
+            </div>
+            <form id="classForm">
+                <input type="hidden" id="classDate">
+                <div class="form-group">
+                    <label class="form-label">학생</label>
+                    <select id="classStudent" class="form-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">수업 시간</label>
+                    <input type="time" class="form-input" id="classTime" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" data-modal="classModal">취소</button>
+                    <button type="submit" class="btn-submit">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 앱 데이터
+            let students = [];
+            let classes = [];
+            let currentDate = new Date();
+            let selectedDate = null;
+            let currentEditingStudentId = null;
+
+            // DOM 요소
+            const getEl = (id) => document.getElementById(id);
+            const queryEl = (selector) => document.querySelector(selector);
+            const queryAll = (selector) => document.querySelectorAll(selector);
+
+            const tabButtons = queryAll('.tab-button');
+            const tabContents = queryAll('.tab-content');
+            const calendarGrid = getEl('calendarGrid');
+            const currentMonthElement = getEl('currentMonth');
+            const scheduledClassesTitle = getEl('scheduledClassesTitle');
+            const scheduledClassesList = getEl('scheduledClassesList');
+            const studentList = getEl('studentList');
+
+            // 모달 관련
+            const studentModal = getEl('studentModal');
+            const classModal = getEl('classModal');
+            const studentForm = getEl('studentForm');
+            const classForm = getEl('classForm');
+
+            // --- 데이터 관리 (LocalStorage) ---
+            const saveData = () => {
+                localStorage.setItem('tutoring_students', JSON.stringify(students));
+                localStorage.setItem('tutoring_classes', JSON.stringify(classes));
+            };
+
+            const loadData = () => {
+                students = JSON.parse(localStorage.getItem('tutoring_students')) || [];
+                classes = JSON.parse(localStorage.getItem('tutoring_classes')) || [];
+            };
+            
+            // --- 뷰 렌더링 함수 ---
+            
+            // 캘린더 렌더링
+            const updateCalendar = () => {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                
+                currentMonthElement.textContent = `${year}년 ${month + 1}월`;
+                
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                
+                const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
+                calendarGrid.innerHTML = dayHeaders.map(day => `<div class="calendar-day-header">${day}</div>`).join('');
+
+                let dayCounter = new Date(firstDay);
+                dayCounter.setDate(dayCounter.getDate() - firstDay.getDay());
+                
+                const today = new Date();
+                
+                for (let i = 0; i < 42; i++) {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.classList.add('calendar-day');
+
+                    const dateStr = `${dayCounter.getFullYear()}-${String(dayCounter.getMonth() + 1).padStart(2, '0')}-${String(dayCounter.getDate()).padStart(2, '0')}`;
+                    dayDiv.dataset.date = dateStr;
+
+                    const dayNumber = document.createElement('span');
+                    dayNumber.className = 'day-number';
+                    dayNumber.textContent = dayCounter.getDate();
+                    dayDiv.appendChild(dayNumber);
+
+                    if (dayCounter.getMonth() !== month) {
+                        dayDiv.style.opacity = "0.4";
+                    }
+
+                    if (dayCounter.toDateString() === today.toDateString()) {
+                        dayDiv.classList.add('today');
+                    }
+
+                    if (selectedDate && dayCounter.toDateString() === selectedDate.toDateString()) {
+                        dayDiv.classList.add('selected');
+                    }
+                    
+                    const classesOnThisDay = classes.filter(c => c.date === dateStr);
+                    if (classesOnThisDay.length > 0) {
+                        dayDiv.classList.add('has-class');
+                    }
+
+                    calendarGrid.appendChild(dayDiv);
+                    dayCounter.setDate(dayCounter.getDate() + 1);
+                }
+            };
+            
+            // 특정 날짜의 수업 목록 렌더링
+            const renderClassesForDate = (date) => {
+                selectedDate = date;
+                const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                
+                const today = new Date();
+                if (date.toDateString() === today.toDateString()) {
+                    scheduledClassesTitle.textContent = '오늘의 수업';
+                } else {
+                    scheduledClassesTitle.textContent = `${date.getMonth() + 1}월 ${date.getDate()}일의 수업`;
+                }
+
+                const classesOnThisDay = classes
+                    .filter(c => c.date === dateStr)
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                if (classesOnThisDay.length === 0) {
+                    scheduledClassesList.innerHTML = `<div class="no-class-msg">예정된 수업이 없습니다.</div>`;
+                } else {
+                    scheduledClassesList.innerHTML = classesOnThisDay.map(c => {
+                        const student = students.find(s => s.id === c.studentId);
+                        return `
+                            <div class="class-item">
+                                <div class="class-info-group">
+                                    <div class="class-time">${c.time}</div>
+                                    <div class="class-student">${student ? `${student.name} (${student.subject})` : '알 수 없는 학생'}</div>
+                                </div>
+                                <button class="btn-small danger" data-class-id="${c.id}">삭제</button>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                updateCalendar();
+            };
+
+            // 학생 목록 렌더링
+            const renderStudents = () => {
+                studentList.innerHTML = '';
+                if (students.length === 0) {
+                    studentList.innerHTML = `<div class="no-class-msg">등록된 학생이 없습니다.</div>`;
+                    return;
+                }
+                students.forEach(student => {
+                    const studentCard = document.createElement('div');
+                    studentCard.className = 'student-card';
+                    studentCard.innerHTML = `
+                        <div class="student-info">
+                            <h3>${student.name}</h3>
+                            <div class="student-details">
+                                <div>과목: ${student.subject}</div>
+                                <div>학년: ${student.grade || '-'}</div>
+                                <div>연락처: ${student.phone || '-'}</div>
+                                <div>수업료: ${student.fee ? student.fee.toLocaleString() + '원' : '-'}</div>
+                            </div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn-small edit-student" data-id="${student.id}">편집</button>
+                            <button class="btn-small danger delete-student" data-id="${student.id}">삭제</button>
+                        </div>
+                    `;
+                    studentList.appendChild(studentCard);
+                });
+            };
+
+            // --- 모달 관리 ---
+            const openModal = (modalElement) => modalElement.classList.add('show');
+            const closeModal = (modalElement) => modalElement.classList.remove('show');
+
+            const openStudentModal = (studentId = null) => {
+                currentEditingStudentId = studentId;
+                studentForm.reset();
+                if (studentId) {
+                    const student = students.find(s => s.id === studentId);
+                    getEl('studentModalTitle').textContent = '학생 편집';
+                    getEl('studentName').value = student.name;
+                    getEl('studentSubject').value = student.subject;
+                    getEl('studentGrade').value = student.grade;
+                    getEl('studentPhone').value = student.phone;
+                    getEl('studentFee').value = student.fee;
+                } else {
+                    getEl('studentModalTitle').textContent = '학생 추가';
+                }
+                openModal(studentModal);
+            };
+
+            const openClassModal = () => {
+                if (!selectedDate) {
+                    alert('먼저 캘린더에서 날짜를 선택해주세요.');
+                    return;
+                }
+                if (students.length === 0) {
+                    alert('먼저 학생을 등록해주세요.');
+                    return;
+                }
+                classForm.reset();
+                getEl('classDate').value = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                
+                const studentSelect = getEl('classStudent');
+                studentSelect.innerHTML = students.map(s => `<option value="${s.id}">${s.name} (${s.subject})</option>`).join('');
+                
+                openModal(classModal);
+            };
+            
+            // --- 이벤트 핸들러 ---
+            
+            // 탭 전환
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    button.classList.add('active');
+                    getEl(targetTab).classList.add('active');
+                });
+            });
+
+            // 캘린더 월 이동
+            getEl('prevMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                updateCalendar();
+            });
+
+            getEl('nextMonth').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                updateCalendar();
+            });
+            
+            // 캘린더 날짜 클릭
+            calendarGrid.addEventListener('click', (e) => {
+                const dayDiv = e.target.closest('.calendar-day');
+                if (dayDiv && dayDiv.dataset.date) {
+                    renderClassesForDate(new Date(dayDiv.dataset.date));
+                }
+            });
+            
+            // 학생 추가 버튼
+            getEl('addStudentBtn').addEventListener('click', () => openStudentModal());
+
+            // 학생 리스트에서 편집/삭제 버튼
+            studentList.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.classList.contains('edit-student')) {
+                    openStudentModal(Number(target.dataset.id));
+                }
+                if (target.classList.contains('delete-student')) {
+                    const studentId = Number(target.dataset.id);
+                    if (confirm('정말로 이 학생을 삭제하시겠습니까?\n해당 학생의 모든 수업 기록이 함께 삭제됩니다.')) {
+                        students = students.filter(s => s.id !== studentId);
+                        classes = classes.filter(c => c.studentId !== studentId);
+                        saveData();
+                        renderStudents();
+                        renderClassesForDate(selectedDate || new Date());
+                    }
+                }
+            });
+            
+            // 수업 추가 버튼
+            getEl('addClassBtn').addEventListener('click', openClassModal);
+            
+            // 수업 삭제 버튼
+            scheduledClassesList.addEventListener('click', (e) => {
+                if(e.target.matches('[data-class-id]')) {
+                    const classId = Number(e.target.dataset.classId);
+                    classes = classes.filter(c => c.id !== classId);
+                    saveData();
+                    renderClassesForDate(selectedDate);
+                }
+            });
+
+            // 학생 정보 폼 제출
+            studentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = {
+                    name: getEl('studentName').value,
+                    subject: getEl('studentSubject').value,
+                    grade: getEl('studentGrade').value,
+                    phone: getEl('studentPhone').value,
+                    fee: parseInt(getEl('studentFee').value) || 0
+                };
+
+                if (currentEditingStudentId) {
+                    const index = students.findIndex(s => s.id === currentEditingStudentId);
+                    students[index] = { ...students[index], ...formData };
+                } else {
+                    const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+                    students.push({ id: newId, ...formData });
+                }
+                saveData();
+                renderStudents();
+                closeModal(studentModal);
+            });
+
+            // 수업 정보 폼 제출
+            classForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newClass = {
+                    id: classes.length > 0 ? Math.max(...classes.map(c => c.id)) + 1 : 1,
+                    date: getEl('classDate').value,
+                    time: getEl('classTime').value,
+                    studentId: Number(getEl('classStudent').value)
+                };
+                classes.push(newClass);
+                saveData();
+                renderClassesForDate(selectedDate);
+                closeModal(classModal);
+            });
+
+            // 모달 닫기 버튼 및 배경 클릭
+            queryAll('.close-btn, .btn-cancel').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modal = getEl(btn.dataset.modal);
+                    closeModal(modal);
+                });
+            });
+            
+            queryAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- 앱 초기화 ---
+            const initializeApp = () => {
+                loadData();
+                const today = new Date();
+                selectedDate = today;
+                renderStudents();
+                updateCalendar();
+                renderClassesForDate(today);
+            };
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>

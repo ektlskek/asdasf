@@ -277,13 +277,13 @@
             const importDataInput = getEl('importDataInput');
 
             const saveData = () => {
-                localStorage.setItem('tutoring_log_students_v5', JSON.stringify(students));
-                localStorage.setItem('tutoring_log_classes_v5', JSON.stringify(classes));
+                localStorage.setItem('tutoring_log_students_v6', JSON.stringify(students));
+                localStorage.setItem('tutoring_log_classes_v6', JSON.stringify(classes));
             };
 
             const loadData = () => {
-                students = JSON.parse(localStorage.getItem('tutoring_log_students_v5')) || [];
-                classes = JSON.parse(localStorage.getItem('tutoring_log_classes_v5')) || [];
+                students = JSON.parse(localStorage.getItem('tutoring_log_students_v6')) || [];
+                classes = JSON.parse(localStorage.getItem('tutoring_log_classes_v6')) || [];
             };
 
             const renderStudentFilter = () => {
@@ -401,30 +401,35 @@
                 updateCalendar();
             };
 
-            const updateAndRenderStudents = () => {
+            const updateUnpaidMonths = () => {
                 const today = new Date();
                 students.forEach(student => {
-                    if (student.paymentMethod === 'monthly') {
-                        const lastMonthDate = new Date(today.getFullYear(), today.getMonth(), 0); 
-                        const lastMonthYear = lastMonthDate.getFullYear();
-                        const lastMonthMonth = lastMonthDate.getMonth();
+                    if (student.paymentMethod !== 'monthly') return;
+                    
+                    if (!student.unpaidMonths) student.unpaidMonths = [];
+
+                    const lastMonthDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                    const lastMonthYear = lastMonthDate.getFullYear();
+                    const lastMonthMonth = lastMonthDate.getMonth();
                         
-                        const isAlreadyUnpaid = (student.unpaidMonths || []).some(m => m.year === lastMonthYear && m.month === lastMonthMonth);
+                    const isAlreadyUnpaid = student.unpaidMonths.some(m => m.year === lastMonthYear && m.month === lastMonthMonth);
 
-                        if (!isAlreadyUnpaid) {
-                            const classesInLastMonth = classes.filter(c => {
-                                const classDate = new Date(c.date.replace(/-/g, '/'));
-                                return c.studentIds.includes(student.id) && classDate.getFullYear() === lastMonthYear && classDate.getMonth() === lastMonthMonth;
-                            }).length;
+                    if (!isAlreadyUnpaid) {
+                        const classesInLastMonth = classes.filter(c => {
+                            const classDate = new Date(c.date.replace(/-/g, '/'));
+                            return c.studentIds.includes(student.id) && classDate.getFullYear() === lastMonthYear && classDate.getMonth() === lastMonthMonth;
+                        }).length;
 
-                            if(classesInLastMonth > 0) {
-                                student.unpaidMonths.push({ year: lastMonthYear, month: lastMonthMonth, classCount: classesInLastMonth });
-                            }
+                        if (classesInLastMonth > 0) {
+                            student.unpaidMonths.push({ year: lastMonthYear, month: lastMonthMonth, classCount: classesInLastMonth });
                         }
                     }
                 });
                 saveData();
+            };
 
+            const renderStudents = () => {
+                const today = new Date();
                 studentList.innerHTML = '';
                 if (students.length === 0) {
                     studentList.innerHTML = `<div class="no-class-msg">등록된 학생이 없습니다.</div>`;
@@ -567,17 +572,21 @@
             const activateTab = (tabName) => {
                 tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
                 tabContents.forEach(content => content.classList.toggle('active', content.id === tabName));
-                if(tabName === 'students') updateAndRenderStudents();
+                if(tabName === 'students') renderStudents();
+            };
+
+            const refreshAllDataAndViews = () => {
+                updateUnpaidMonths();
+                renderStudents(); 
+                renderStudentFilter();
+                updateCalendar();
+                renderClassesForDate(selectedDate || new Date());
             };
 
             const initializeApp = () => {
                 loadData();
-                const today = new Date();
-                selectedDate = today;
-                renderStudentFilter();
-                updateAndRenderStudents(); 
-                updateCalendar();
-                renderClassesForDate(today);
+                selectedDate = new Date();
+                refreshAllDataAndViews();
             };
 
             // --- Event Listeners ---
@@ -604,7 +613,7 @@
                             return c;
                         }).filter(c => c.studentIds.length > 0);
                         saveData();
-                        initializeApp();
+                        refreshAllDataAndViews();
                     }
                 }
                 if (target.classList.contains('payment-checkbox')) {
@@ -620,7 +629,7 @@
                         }
                     }
                     saveData();
-                    updateAndRenderStudents();
+                    renderStudents();
                     target.checked = false;
                 }
             });
@@ -640,7 +649,7 @@
                             if (student.paymentMethod === 'session') {
                                 student.totalClassesCount = Math.max(0, (student.totalClassesCount || 0) - 1);
                             } else { // monthly
-                                const unpaidMonthIndex = student.unpaidMonths.findIndex(m => m.year === classDate.getFullYear() && m.month === classDate.getMonth());
+                                const unpaidMonthIndex = (student.unpaidMonths || []).findIndex(m => m.year === classDate.getFullYear() && m.month === classDate.getMonth());
                                 if(unpaidMonthIndex > -1) {
                                     student.unpaidMonths[unpaidMonthIndex].classCount--;
                                     if(student.unpaidMonths[unpaidMonthIndex].classCount <= 0) {
@@ -653,7 +662,7 @@
                     classes = classes.filter(c => c.id !== classId);
                     saveData();
                     renderClassesForDate(selectedDate);
-                    updateAndRenderStudents();
+                    renderStudents();
                 }
             });
 
@@ -697,7 +706,7 @@
                     students.push(newStudent);
                 }
                 saveData();
-                updateAndRenderStudents();
+                renderStudents();
                 renderStudentFilter();
                 closeModal(studentModal);
             });
@@ -757,7 +766,7 @@
                 
                 saveData();
                 renderClassesForDate(selectedDate);
-                updateAndRenderStudents();
+                renderStudents();
                 closeModal(classModal);
             });
 

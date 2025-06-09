@@ -277,13 +277,13 @@
             const importDataInput = getEl('importDataInput');
 
             const saveData = () => {
-                localStorage.setItem('tutoring_log_students_v6', JSON.stringify(students));
-                localStorage.setItem('tutoring_log_classes_v6', JSON.stringify(classes));
+                localStorage.setItem('tutoring_log_students_v5', JSON.stringify(students));
+                localStorage.setItem('tutoring_log_classes_v5', JSON.stringify(classes));
             };
 
             const loadData = () => {
-                students = JSON.parse(localStorage.getItem('tutoring_log_students_v6')) || [];
-                classes = JSON.parse(localStorage.getItem('tutoring_log_classes_v6')) || [];
+                students = JSON.parse(localStorage.getItem('tutoring_log_students_v5')) || [];
+                classes = JSON.parse(localStorage.getItem('tutoring_log_classes_v5')) || [];
             };
 
             const renderStudentFilter = () => {

@@ -401,7 +401,7 @@
                 updateCalendar();
             };
 
-            const renderStudents = () => {
+            const updateAndRenderStudents = () => {
                 const today = new Date();
                 students.forEach(student => {
                     if (student.paymentMethod === 'monthly') {
@@ -409,7 +409,7 @@
                         const lastMonthYear = lastMonthDate.getFullYear();
                         const lastMonthMonth = lastMonthDate.getMonth();
                         
-                        const isAlreadyUnpaid = student.unpaidMonths.some(m => m.year === lastMonthYear && m.month === lastMonthMonth);
+                        const isAlreadyUnpaid = (student.unpaidMonths || []).some(m => m.year === lastMonthYear && m.month === lastMonthMonth);
 
                         if (!isAlreadyUnpaid) {
                             const classesInLastMonth = classes.filter(c => {
@@ -424,7 +424,6 @@
                     }
                 });
                 saveData();
-
 
                 studentList.innerHTML = '';
                 if (students.length === 0) {
@@ -568,7 +567,7 @@
             const activateTab = (tabName) => {
                 tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
                 tabContents.forEach(content => content.classList.toggle('active', content.id === tabName));
-                if(tabName === 'students') renderStudents();
+                if(tabName === 'students') updateAndRenderStudents();
             };
 
             const initializeApp = () => {
@@ -576,7 +575,7 @@
                 const today = new Date();
                 selectedDate = today;
                 renderStudentFilter();
-                renderStudents(); 
+                updateAndRenderStudents(); 
                 updateCalendar();
                 renderClassesForDate(today);
             };
@@ -615,11 +614,13 @@
                         if(student.totalClassesCount >= student.sessionCycle) {
                            student.totalClassesCount -= student.sessionCycle;
                         }
-                    } else {
-                        student.unpaidMonths.shift();
+                    } else { // monthly
+                        if (student.unpaidMonths && student.unpaidMonths.length > 0) {
+                            student.unpaidMonths.shift();
+                        }
                     }
                     saveData();
-                    renderStudents();
+                    updateAndRenderStudents();
                     target.checked = false;
                 }
             });
@@ -633,17 +634,26 @@
                     const classId = Number(target.dataset.classId);
                     const classToDelete = classes.find(c => c.id === classId);
                     if (classToDelete) {
+                        const classDate = new Date(classToDelete.date.replace(/-/g, '/'));
                         classToDelete.studentIds.forEach(studentId => {
                             const student = students.find(s => s.id === studentId);
-                            if (student && student.paymentMethod === 'session') {
+                            if (student.paymentMethod === 'session') {
                                 student.totalClassesCount = Math.max(0, (student.totalClassesCount || 0) - 1);
+                            } else { // monthly
+                                const unpaidMonthIndex = student.unpaidMonths.findIndex(m => m.year === classDate.getFullYear() && m.month === classDate.getMonth());
+                                if(unpaidMonthIndex > -1) {
+                                    student.unpaidMonths[unpaidMonthIndex].classCount--;
+                                    if(student.unpaidMonths[unpaidMonthIndex].classCount <= 0) {
+                                        student.unpaidMonths.splice(unpaidMonthIndex, 1);
+                                    }
+                                }
                             }
                         });
                     }
                     classes = classes.filter(c => c.id !== classId);
                     saveData();
                     renderClassesForDate(selectedDate);
-                    renderStudents();
+                    updateAndRenderStudents();
                 }
             });
 
@@ -687,7 +697,7 @@
                     students.push(newStudent);
                 }
                 saveData();
-                renderStudents();
+                updateAndRenderStudents();
                 renderStudentFilter();
                 closeModal(studentModal);
             });
@@ -747,7 +757,7 @@
                 
                 saveData();
                 renderClassesForDate(selectedDate);
-                renderStudents();
+                updateAndRenderStudents();
                 closeModal(classModal);
             });
 
